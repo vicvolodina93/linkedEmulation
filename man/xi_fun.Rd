@@ -10,7 +10,7 @@ xi_fun(w_i, mu, Sigma, params, ind = "TRUE", det_comp = NULL, LS.inv = NULL)
 \arguments{
 \item{w_i}{a vector of size k.}
 
-\item{mu}{a vector of predictive mean values of lenght k.}
+\item{mu}{a vector of predictive mean values of length k.}
 
 \item{Sigma}{a variance-covariance matrix.}
 

@@ -2,7 +2,7 @@
 #' (dependent case) of integrated emulator with a squared exponential kernel.
 #'
 #' @param w_i a vector of size k.
-#' @param mu a vector of predictive mean values of lenght k.
+#' @param mu a vector of predictive mean values of length k.
 #' @param Sigma a variance-covariance matrix.
 #' @param params a list with parameter values.
 #' @param ind logical indicating if we adopt independence assumption.
