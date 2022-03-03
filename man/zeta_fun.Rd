@@ -22,13 +22,13 @@ zeta_fun(
 
 \item{w_j}{a vector of size k.}
 
-\item{mu}{a vector of predictive mean values of lenght k.}
+\item{mu}{a vector of predictive mean values of length k.}
 
 \item{Sigma}{a variance-covariance matrix.}
 
 \item{params}{a list with parameter values.}
 
-\item{ind}{logical indicating if we adopt independece assumption.}
+\item{ind}{logical indicating if we adopt independence assumption.}
 
 \item{det_comp}{a determinant component in the calculations.}
 
@@ -37,7 +37,7 @@ zeta_fun(
 \item{GS.inv}{an inverse of the sum of covariance matrix and Gamma.}
 }
 \value{
-a vector (independent case) or a single value.
+a vector (independent case) or a single value (dependent case).
 }
 \description{
 Function to compute \eqn{\zeta_{ijk}} (independent case) and \eqn{\zeta_{ij}}

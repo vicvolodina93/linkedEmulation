@@ -3,15 +3,15 @@
 #'
 #' @param w_i a vector of size k.
 #' @param w_j a vector of size k.
-#' @param mu a vector of predictive mean values of lenght k.
+#' @param mu a vector of predictive mean values of length k.
 #' @param Sigma a variance-covariance matrix.
 #' @param params a list with parameter values.
-#' @param ind logical indicating if we adopt independece assumption.
+#' @param ind logical indicating if we adopt independence assumption.
 #' @param det_comp a determinant component in the calculations.
 #' @param Gamma.inv an inverse of Gamma matrix.
 #' @param GS.inv an inverse of the sum of covariance matrix and Gamma.
 #'
-#' @return a vector (independent case) or a single value.
+#' @return a vector (independent case) or a single value (dependent case).
 #' @export
 #'
 #' @examples
