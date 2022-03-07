@@ -9,8 +9,17 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Imports:
+    RobustGaSP,
+    tidyverse
 Suggests: 
+    rmarkdown,
+    knitr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 URL: https://github.com/vicvolodina93/linkedEmulation
 BugReports: https://github.com/vicvolodina93/linkedEmulation/issues
+Depends: 
+    R (>= 2.10)
+LazyData: true
+VignetteBuilder: knitr

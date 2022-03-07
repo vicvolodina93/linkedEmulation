@@ -1,0 +1,36 @@
+---
+title: "Tutorial"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+devtools::load_all()
+```
+
+### Construct a GP emulator for Energy Systems Model.
+
+```{r, }
+n_design <- dim(w_design)[1]
+design <- as.matrix(cbind(w_design, z_design))
+m.E <- RobustGaSP::rgasp(design = design,
+             trend = cbind(rep(1, n_design), design),
+             response = y_design, nugget = 0.1,
+             kernel_type = "pow_exp",
+             alpha = rep(2, 5))
+```
+
+Construct an emulator
+
+
+
