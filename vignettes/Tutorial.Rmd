@@ -16,11 +16,15 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 devtools::load_all()
+library(tidyverse)
+library(patchwork)
 ```
 
 ### Construct a GP emulator for Energy Systems Model.
 
-```{r, }
+We proceed to construct a GP emulator with a linear form of the regression function, $h(\boldsymbol{x})=(1, x_1, x_2, x_3, x_4, x_5)$, squared exponential correlation function (kernel) and nugget term $\tau^2=1$.
+
+```{r, warning=FALSE, results="hide"}
 n_design <- dim(w_design)[1]
 design <- as.matrix(cbind(w_design, z_design))
 m.E <- RobustGaSP::rgasp(design = design,
@@ -30,7 +34,92 @@ m.E <- RobustGaSP::rgasp(design = design,
              alpha = rep(2, 5))
 ```
 
-Construct an emulator
+We use RobustGaSP package to fit a GP emulator. We proceed to perform validations.
+
+```{r}
+
+n_valid <- dim(w_valid)[1]
+valid <- as.matrix(cbind(w_valid, z_valid))
+LOO.m.E <- RobustGaSP::leave_one_out_rgasp(m.E)
+
+predict.m.E <- RobustGaSP::predict(m.E, valid,
+                       testing_trend = cbind(rep(1, n_valid), valid))
+```
+
+```{r, fig.cap = "Traditional Leave One Out (top row) and cross-validation (bottom row) plots for energy systens model emulator."}
+loo_energy <- tibble(x = LOO.m.E$mean,
+                     y = y_design,
+                     y_lower = LOO.m.E$mean-2*LOO.m.E$sd,
+                     y_upper = LOO.m.E$mean+2*LOO.m.E$sd)%>%
+  mutate(perform = if_else(y_lower <= y & y <= y_upper, 1, 0)) %>%
+  mutate(perform = as.factor(perform)) %>%
+  ggplot() +
+  geom_errorbar(aes(x = x, ymin = y_lower, ymax = y_upper),
+                width = 20) +
+  geom_point(aes(x = x, y = y, colour = perform)) +
+  scale_color_manual(" ", breaks = c(0, 1),
+                     values = c(wesanderson::wes_palettes$FantasticFox1[5],                 wesanderson::wes_palettes$FantasticFox1[3]),
+                     labels = c("out", "in")) +
+  labs(x = "Prediction", y = "True values")
+
+
+valid_energy <- tibble(x = predict.m.E$mean,
+                       y = y_valid,
+                       y_lower = predict.m.E$mean-2*predict.m.E$sd,
+                       y_upper = predict.m.E$mean+2*predict.m.E$sd)%>%
+  mutate(perform = if_else(y_lower <= y & y <= y_upper, 1, 0)) %>%
+  mutate(perform = as.factor(perform)) %>%
+  ggplot() +
+  geom_errorbar(aes(x = x, ymin = y_lower, ymax = y_upper),
+                width = 20) +
+  geom_point(aes(x = x, y = y, colour = perform)) +
+  scale_color_manual(" ",
+                     breaks = c(0, 1),
+                     values = c(wesanderson::wes_palettes$FantasticFox1[5],                                wesanderson::wes_palettes$FantasticFox1[3]),
+                     labels = c("out", "in")) +
+  labs(x = "Prediction", y = "True values")
+
+
+loo_energy/valid_energy
+
+```
+
+### Produce components necessary for the computation of linked emulator.
+
+```{r}
+d <- 3 # number of random inputs
+d_t <- 5 # total number of inputs
+
+params <- list(delta_par = 1/m.E@beta_hat,
+               sigma = sqrt(m.E@sigma2_hat),
+               beta = c(m.E@theta_hat[2:(d+1)],
+                        m.E@theta_hat[-(2:(d+1))]),
+               nugget = m.E@nugget)
+
+m = dim(m.E@input)[1]
+
+A <- CovMatrix(m.E@input, params$delta_par) +
+    diag(params$nugget, ncol = m, nrow = m)
+QA <- chol(A)
+R <- solve(A)
+
+diff <-  m.E@output- as.matrix(m.E@input[, 1:d])%*%as.matrix(c(params$beta[1:d]),
+                                                              nrow = d) -
+    cbind(rep(1, m), as.matrix(m.E@input[, -(1:d)]))%*%as.matrix(c(params$beta[-(1:d)]),
+                                                              nrow = (d_t+1)-d)
+
+Ldiff <- backsolve(QA, diff, transpose=TRUE)
+FastParts<- list(A = A, QA = QA, Ldiff = Ldiff,R = R, diff = diff)
+```
+
+### Predictions produced by linked emulator.
+
+
+
+
+
+
+
 
 
 
