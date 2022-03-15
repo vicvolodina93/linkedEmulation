@@ -114,10 +114,60 @@ FastParts<- list(A = A, QA = QA, Ldiff = Ldiff,R = R, diff = diff)
 
 ### Predictions produced by linked emulator.
 
+We proceed to compute mean and variance of the linked emulator using two functions `mean_fun` and `var_fun`.
+
+```{r}
+n2 <- dim(mean_pred)[1] # specify the size of the validation data set.
+
+# compute mean values
+linked_mean_vec <- sapply(1:n2, function(x)
+  mean_fun(w = as.matrix(w_design),
+           z = c(z_valid$z1[x], z_valid$z2[x]),
+           z_design = as.matrix(z_design),
+           y =  y_design,
+           mu = c(mean_pred$mu1[x],mean_pred$mu2[x],mean_pred$mu3[x]),
+           Sigma = matrix(c(covar_pred$var1[x], 0, 0, 
+                            0, covar_pred$var2[x], covar_pred$covar23[x], 
+                            0, covar_pred$covar23[x], covar_pred$var3[x]), 
+                          nrow = 3, ncol = 3), 
+           params = params, FastParts = FastParts, ind = "FALSE"))
+
+# compute variance values.
+linked_var_vec <- sapply(1:n2, function(x)
+  var_fun(w = as.matrix(w_design),
+           z = c(z_valid$z1[x], z_valid$z2[x]),
+           z_design = as.matrix(z_design),
+           y =  y_design,
+           mu = c(mean_pred$mu1[x],mean_pred$mu2[x],mean_pred$mu3[x]),
+           Sigma = matrix(c(covar_pred$var1[x], 0, 0, 
+                            0, covar_pred$var2[x], covar_pred$covar23[x], 
+                            0, covar_pred$covar23[x], covar_pred$var3[x]), 
+                          nrow = 3, ncol = 3), 
+           params = params, FastParts = FastParts, ind = "FALSE"))
 
 
+```
+
+```{r, fig.cap = "One-step ahead predictions: black points correspond to the total operational costs produced by the energy system simulator. The red line and the red dotted lines correspond to the forecasts produced by the linked model.", fig.width = 10,  fig.heigh = 5}
+valid.energy.linked <- tibble(date = 1:n2,
+                              y_valid = y_valid,
+                              pred_m = linked_mean_vec,
+                              pred_l = linked_mean_vec- 2*sqrt(linked_var_vec),
+                              pred_u = linked_mean_vec + 2*sqrt(linked_var_vec))
 
 
+pred_plot_linked <- ggplot(valid.energy.linked[-1, ]) +
+  geom_line(aes(x = date, y = pred_l),
+            color = "red", linetype = "dashed") +
+  geom_line(aes(x = date, y = pred_u),
+            color = "red", linetype = "dashed") +
+  geom_line(aes(x = date, y = pred_m), color = "red") +
+  geom_point(aes(x = date, y = y_valid)) +
+  ylab("Total operational costs (£)") +
+  xlab("") 
+
+pred_plot_linked
+```
 
 
 
