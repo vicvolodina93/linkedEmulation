@@ -32,7 +32,7 @@ bvec <- function(w, z =  NULL, mu, Sigma, z_design = NULL, params,
       } else {
         b1 <- sapply(1:d1, function(x) exp(-(z_design[i, x] - z[x])^2/
                                              (params$delta_par[d+x])^2))
-        I[i, 1] <- b*prod(b1)
+        I[i, 1] <- prod(b)*prod(b1)
       }
 
     }
@@ -40,11 +40,11 @@ bvec <- function(w, z =  NULL, mu, Sigma, z_design = NULL, params,
     for(i in 1:m) {
       b <- xi_fun(w[i, ], mu, Sigma, params, ind, det_comp, LS.inv)
       if(is.null(z_design)) {
-        I[i, 1] <- b
+        I[i, 1] <- prod(b)
       } else {
         b1 <- sapply(1:d1, function(x) exp(-(z_design[i, x] - z[x])^2/
                                              (params$delta_par[d+x])^2))
-        I[i, 1] <- b*prod(b1)
+        I[i, 1] <- prod(b)*prod(b1)
       }
     }
   }

@@ -18,10 +18,10 @@ xi_fun <- function(w_i, mu, Sigma, params, ind = "TRUE",
 
   d <- length(w_i)
   if(ind == "TRUE") {
-    sigma_sq <- diag(Sigma)
+    #sigma_sq <- diag(Sigma)
     xi_val <- sapply(1:d, function(k)
-      1/(sqrt(1+2*sigma_sq[k]/params$delta_par[k]^2))*
-        exp(-(mu[k]-w_i[k])^2/(2*sigma_sq[k]+params$delta_par[k]^2)))
+      1/(sqrt(1+2*Sigma[k, k]/params$delta_par[k]^2))*
+        exp(-(mu[k]-w_i[k])^2/(2*Sigma[k, k]+params$delta_par[k]^2)))
   } else {
     if(is.null(det_comp)) {
       Lambda.mat <- diag(params$delta_par^2/2, nrow = d, ncol = d)
