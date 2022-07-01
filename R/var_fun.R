@@ -14,6 +14,7 @@
 #' assumption for \eqn{W}.
 #'
 #' @return a value of the analytical variance.
+#' @export
 #'
 #' @examples
 var_fun <- function(w, z = NULL, y, mu, Sigma, z_design = NULL, params,

@@ -6,6 +6,9 @@ CovMatrix <- function(Design, cls){
   #'
   #' @return A matrix of correlation calculated for design points
   #'
+  #' @export
+  #'
+  #' @examples
   n = dim(Design)[1] # number of training points
   if(is.null(n))
     n <- length(Design)
